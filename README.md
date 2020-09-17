@@ -1,1 +1,3 @@
-# thesis-danny-riso
+# Danny Riso Thesis Repository
+
+to be continued
