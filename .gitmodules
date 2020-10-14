@@ -1,3 +1,6 @@
 [submodule "wikiextractor"]
 	path = wikiextractor
 	url = https://github.com/attardi/wikiextractor.git
+[submodule "WikiUtils"]
+	path = WikiUtils
+	url = https://github.com/napsternxg/WikiUtils
