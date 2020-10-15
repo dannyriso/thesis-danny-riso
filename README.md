@@ -1,6 +1,6 @@
 # Danny Riso Thesis Repository
   
-Current Task(s):
+Current Task(s):  
 -- Correct WikiUtils parser to convert page SQL dumps to text files  
 -- Revise demo program to find dog breeds category & children  
   
