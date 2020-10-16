@@ -4,3 +4,6 @@
 [submodule "WikiUtils"]
 	path = WikiUtils
 	url = https://github.com/napsternxg/WikiUtils
+[submodule "odd-man-out"]
+	path = odd-man-out
+	url = https://www.github.com/gabrielStanovsky/odd-man-out.git
