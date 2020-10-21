@@ -1,9 +1,9 @@
 [submodule "wikiextractor"]
 	path = wikiextractor
 	url = https://github.com/attardi/wikiextractor.git
-[submodule "WikiUtils"]
-	path = WikiUtils
-	url = https://github.com/napsternxg/WikiUtils
 [submodule "odd-man-out"]
 	path = odd-man-out
 	url = https://www.github.com/gabrielStanovsky/odd-man-out.git
+[submodule "WikiUtils"]
+	path = WikiUtils
+	url = https://github.com/benediktwerner/WikiUtils.git
