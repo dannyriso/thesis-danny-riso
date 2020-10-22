@@ -21,12 +21,6 @@ class Taxonomy:
     def get_root(self):
         raise NotImplementedError('Cannot call this method on abstract class.')
 
-    def get_children(self, node):
-        raise NotImplementedError('Cannot call this method on abstract class.')
-
-    def get_parents(self, node):
-        raise NotImplementedError('Cannot call this method on abstract class.')
-
     def get_ancestor_categories(self, node):
         raise NotImplementedError('Cannot call this method on abstract class.')
 
