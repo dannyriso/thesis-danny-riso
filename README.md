@@ -1,5 +1,9 @@
 # Danny Riso Thesis Repository
   
+How to run the wiki_demo program:
+    python download.py  
+    python wiki_demo.py  
+  
 Current Task(s):  
 -- Produce WCG hierarchies rather than list of descendants  
   
