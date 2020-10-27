@@ -2,7 +2,7 @@
 wiki_demo.py
 
 This code accesses the page and categorylinks files extracted from
-Wikipedia dumps (using Wikiextractor and WikiUtils github repos) and
+Wikipedia dumps (download and format using download.py) and
 puts the titles of all pages linked to by a certain category into a list,
 then returns the list.
 """
@@ -48,7 +48,7 @@ def main():
             elif file_type == "'subcat'":
                 subcats.append(page_id)
     
-    # For each found page_id, locate it in the pages file and add it
+    # For each found page_id, locate it in the pages file and add its label
     # to the list to return.
     for page in pages:
         delim_p1 = page.find('\t')
