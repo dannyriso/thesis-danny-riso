@@ -11,23 +11,19 @@ import requests # requests.get, for downloading wiki dumps
 import subprocess # subprocess.Popen, for running the extraction commands
 from pathlib import Path # for checking if a file already exists in pwd
 
-# Initialize dump variables
-dump_date = "20201020"
-dumps_to_download = [
-    "enwiki-" + dump_date + "-page.sql.gz",
-    "enwiki-" + dump_date + "-categorylinks.sql.gz",
-    "enwikibooks-" + dump_date + "-page.sql.gz",
-    "enwikibooks-" + dump_date + "-categorylinks.sql.gz"]
+def analyze_dump_filename(filename):
+    (_, dump_date, filetype) = filename[:-len('.sql.gz')].split('-')
+    return dump_date, filetype
 
-def download():
-    wikidumps_url = "https://dumps.wikimedia.org"
-    
+
+def download(dumps_to_download, wikidumps_url = "https://dumps.wikimedia.org"):
     for dump in dumps_to_download:
         # First check if dump is already downloaded
         if not Path(dump).is_file():
                         
             # Form the URL of the dump to download and issue request to it
             wiki = dump[:dump.find('-')]
+            dump_date, _ = analyze_dump_filename(dump)
             dump_url = wikidumps_url + "/" + wiki + "/" + dump_date + "/" + dump
             dump_contents = requests.get(dump_url, stream=True)
             
@@ -37,24 +33,28 @@ def download():
                     if chunk:
                         dump_file.write(chunk)
 
-def extract():
-    # Initialize extraction variables
-    extracted_files = [
-        "enwiki_page",
-        "enwiki_categorylinks",
-        "enwikibooks_page",
-        "enwikibooks_categorylinks"]
-    
+
+def extract(dumps_to_download):
+    extracted_files = [filename[:-len('.sql.gz')] for filename in dumps_to_download]
     for i in range(len(extracted_files)):
-        file = extracted_files[i]
-        filetype = file[file.find("_")+1:]
+        output_file = extracted_files[i]
         dump = dumps_to_download[i]
+        _, filetype = analyze_dump_filename(dump)
         # Check if files have already been extracted
         if not Path(extracted_files[i]).is_file():
             # Extract into text file using WikiUtils repo
-            proc = subprocess.Popen(["python", "WikiUtils/parse_mysqldump.py", dump, filetype, file])
+            proc = subprocess.Popen(["python", "WikiUtils/parse_mysqldump.py",
+                                     dump, filetype, output_file])
             proc.wait()
 
+
 if __name__ == "__main__":
-    download()
-    extract()
+    # Initialize dump variables
+    my_dump_date = "20201020"
+    dumps_to_download = [
+        "enwiki-" + my_dump_date + "-page.sql.gz",
+        "enwiki-" + my_dump_date + "-categorylinks.sql.gz",
+        "enwikibooks-" + my_dump_date + "-page.sql.gz",
+        "enwikibooks-" + my_dump_date + "-categorylinks.sql.gz"]
+    download(dumps_to_download)
+    extract(dumps_to_download)
