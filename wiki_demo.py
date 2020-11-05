@@ -7,70 +7,72 @@ puts the titles of all pages linked to by a certain category into a list,
 then returns the list.
 """
 
-# To test with enwiki, finding all Dog Breed pages:
-# (https://en.wikipedia.org/wiki/Category:Dog_breeds)
-WIKI = "enwiki"
-CAT_LINKS_FILE = "enwiki_categorylinks"
-PAGES_FILE = "enwiki_page"
-DESIRED_CATEGORY = "'Dog_breeds'"
-
-"""
-# To test with enwikibooks, smaller set with fewer subcategories:
-# (https://en.wikibooks.org/wiki/Category:Book:Organic_Chemistry)
-WIKI = "enwikibooks"
-CAT_LINKS_FILE = "enwikibooks_categorylinks"
-PAGES_FILE = "enwikibooks_page"
-DESIRED_CATEGORY = "'Book:Organic_Chemistry'"
-"""
-
-def main():
-    # Setup
-    cat_links = open(CAT_LINKS_FILE, 'r')
-    pages = open(PAGES_FILE, 'r')
-    pages_in_category = []
+def findPagesInCategory(catlinks_filename, desired_category):
+    catlinks_file = open(catlinks_filename, 'r')
+    
+    subcat_ids = []
+    file_ids= []
     page_ids = []
-    subcats = []
     
-    # Find instances of desired catagory in categorylinks file
-    for category in cat_links:
-        delim_c1 = category.find('\t')
-        delim_c2 = category.find('\t', delim_c1+1)
-        delim_c3 = category.find('\t\n', delim_c2+1)
+    # Find instances of desired category in categorylinks file
+    for category in catlinks_file:
+        page_id, cat_label, page_type = category.strip('\n').split('\t')
         
-        cat_name = category[delim_c1+1:delim_c2]
-        
-        # If desired category, find all page_ids it links to
-        if cat_name == DESIRED_CATEGORY:
-            page_id = category[:delim_c1]
-            file_type = category[delim_c2+1:delim_c3]
-            if file_type == "'page'":
+        if cat_label == desired_category:
+            if page_type == "'page'":
                 page_ids.append(page_id)
-            elif file_type == "'subcat'":
-                subcats.append(page_id)
+            elif page_type == "'subcat'":
+                subcat_ids.append(page_id)
+            elif page_type == "'file'":
+                file_ids.append(page_id)
     
-    # For each found page_id, locate it in the pages file and add its label
-    # to the list to return.
-    for page in pages:
-        delim_p1 = page.find('\t')
-        p_id = page[:delim_p1]
+    catlinks_file.close()
+    return page_ids, subcat_ids, file_ids
+
+def findPagesById(page_filename, id_list):
+    page_file = open(page_filename, 'r')
+    pages_in_category = []
+    
+    for page in page_file:
+        page_id, page_namespace, page_title, page_is_redirect, page_len, page_content_model, page_lang = page.split('\t')
         
-        if p_id in page_ids:
-            delim_p2 = page.find('\t', delim_p1+1)
-            delim_p3 = page.find('\t', delim_p2+1)
-            p_label = page[delim_p2+1:delim_p3]
-            pages_in_category.append(p_label)
-            page_ids.remove(p_id)
+        if page_id in id_list:
+            pages_in_category.append(page_title)
+            id_list.remove(page_id)
     
-    # Print results for debugging and clarity
-    print("Pages in category", DESIRED_CATEGORY, ":")
-    for p in pages_in_category:
-        print(p)
-    
-    # Clean up
-    cat_links.close()
-    pages.close()
+    page_file.close()
     return pages_in_category
 
+def main():
+    
+    # Initialize variables for current search
+    
+    # To test with enwiki, finding all Dog Breed pages:
+    # (https://en.wikipedia.org/wiki/Category:Dog_breeds)
+    my_dump_date = "20201020"
+    wiki = "enwiki"
+    desired_category = "'Dog_breeds'"
+
+    """
+    # To test with enwikibooks, smaller set with fewer subcategories:
+    # (https://en.wikibooks.org/wiki/Category:Book:Organic_Chemistry)
+    wiki = "enwikibooks"
+    desired_category = "'Book:Organic_Chemistry'"
+    """
+    
+    catlinks_filename = wiki + "-" + my_dump_date + "-categorylinks"
+    pages_filename = wiki + "-" + my_dump_date + "-page"
+    
+    # Call desired methods
+    page_ids, subcat_ids, file_ids = findPagesInCategory(catlinks_filename, desired_category)
+    pages = findPagesById(pages_filename, page_ids)
+    
+    # Print results for debugging and clarity
+    print("Pages in category", desired_category, ":")
+    for p in pages:
+        print(p)
+    
+    return 0
+
 if __name__ == "__main__":
-    print("Currently working with", WIKI)
     main()
