@@ -9,6 +9,8 @@ so it can be ordered into an ontology.
 """
 
 from taxonomy import Taxonomy, Specificity
+from wiki_demo import findPagesInCategory, findPagesById
+
 
 class WCGTaxonomy(Taxonomy):
     
@@ -56,8 +58,8 @@ class WCGTaxonomy(Taxonomy):
 #            print(len(categories), "categories left to search.")
 #            print("Current cat:", category)
             page_ids, subcat_ids, file_ids = findPagesInCategory(self.catlinks, category)
-            pages = findPageById(self.pages, page_ids)
-            subcats = findPageById(self.pages, subcat_ids)
+            pages = findPagesById(self.pages, page_ids)
+            subcats = findPagesById(self.pages, subcat_ids)
 #            print("PAGES:", [page for page in pages])
 #            print("SUBCATS:", [cat for cat in subcats])
             for page_title in pages:
@@ -67,7 +69,8 @@ class WCGTaxonomy(Taxonomy):
                     categories.append(cat)
                     self.cat_name_list.append(cat)
         return descendants
-    
+
+
 def getCategoriesOfPage(root, catlinks_filename, p_id):
     catlinks_file = open(catlinks_filename, 'r')
     
@@ -80,39 +83,3 @@ def getCategoriesOfPage(root, catlinks_filename, p_id):
     catlinks_file.close()
     return categories
 
-# The following two functions grabbed from wiki_demo.py
-def findPagesInCategory(catlinks_filename, desired_category):
-    catlinks_file = open(catlinks_filename, 'r')
-    
-    subcat_ids = []
-    file_ids= []
-    page_ids = []
-    
-    # Find instances of desired category in categorylinks file
-    for category in catlinks_file:
-        page_id, cat_label, page_type = category.strip('\n').split('\t')
-        
-        if cat_label == desired_category:
-            if page_type == "'page'":
-                page_ids.append(page_id)
-            elif page_type == "'subcat'":
-                subcat_ids.append(page_id)
-            elif page_type == "'file'":
-                file_ids.append(page_id)
-    
-    catlinks_file.close()
-    return page_ids, subcat_ids, file_ids
-
-def findPageById(page_filename, id_list):
-    page_file = open(page_filename, 'r')
-    pages_in_category = dict()
-    
-    for page in page_file:
-        page_id, page_namespace, page_title, page_is_redirect, page_len, page_content_model, page_lang = page.split('\t')
-        
-        if page_id in id_list:
-            pages_in_category[page_title] = [page_id, page_namespace]
-            id_list.remove(page_id)
-    
-    page_file.close()
-    return pages_in_category
