@@ -24,7 +24,7 @@ def read_ooo_puzzles_from_tsv(filename):
                                   fields[0])
 
 
-common2_puzzles = list(read_ooo_puzzles_from_tsv("data/anomia/common2.tsv.txt"))
+common2_puzzles = list(read_ooo_puzzles_from_tsv("../data/anomia/common2.tsv.txt"))
 
 
 def read_category_map_from_csv(csv_filename):
