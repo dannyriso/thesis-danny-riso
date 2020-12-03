@@ -25,7 +25,7 @@ class TestWCG(unittest.TestCase):
 
     def test_ancestor_categories1(self):
         result = self.taxonomy.get_ancestor_categories("'Vegan_recipes'")
-        expected = ["'Recipes_by_diet'", "'Vegetarian_recipes'"]
+        expected = ["'Recipes'", "'Recipes_by_diet'", "'Vegetarian_recipes'"]
         """
         # These additional categories will be added if the taxonomy
         # has root Categories, not root Recipes
@@ -36,14 +36,21 @@ class TestWCG(unittest.TestCase):
         assert sorted(result) == expected
 
     def test_ancestor_categories2(self):
-        result = self.taxonomy.get_ancestor_categories("'Orange'")
-        expected = ["'Featured_ingredients'", "'Fruits'", "'Ingredients'"]
+        result = self.taxonomy.get_ancestor_categories("'Spinach_Calzones'")
+        expected = ["'Baked_recipes'", "'Cheese_recipes'", 
+                    "'Main_course_recipes'", "'Pizza_recipes'", "'Recipes'", 
+                    "'Recipes_with_metric_units'", "'Spinach_recipes'", 
+                    "'Vegetarian_recipes'"]
         """
         # These additional categories will be added if the taxonomy
         # has root Categories, not root Recipes
-        expected =  ["'Cataloguing'", "'Categories'", "'Cookbook'",
-                     "'Hidden_categories'", "'Featured_ingredients'", 
-                     "'Fruits'", "'Ingredients'"]
+        expected =  ["'Afghan_recipes'", "'Appetizer_recipes'", 
+                     "'Cataloguing'", "'Categories'", "'Chicken_recipes'", 
+                     "'Cookbook_utility_categories'", "'Easy_recipes'", 
+                     "'Featured_recipes'", "'Hidden_categories'", 
+                     "'Indian_recipes'", "'Pakistani_recipes'", 
+                     "'Pashtun_recipes'", "'Punjabi_recipes'", "'Recipes'", 
+                     "'Recipes_with_images'", "'Recipes_with_metric_units'"]
         """
         assert sorted(result) == expected
 
@@ -94,8 +101,8 @@ class TestWCG(unittest.TestCase):
                     "'Green_Mango_and_Cumin_Drink_(Aam_Panna)'", 
                     "'Grilled_Aubergine'", "'Grilled_Portobello_Mushrooms'", 
                     "'Grilled_Vegetable_Sandwich'", "'Guacamole'", 
-                    "'Hannah_Evans_(WMUK)/sandbox'", "'Hard_Tack'", "'Harrisa'",
-                    "'Hilbah'", "'Homemade_Pie_Crust'", "'Hummus_(Greek)'", 
+                    "'Hard_Tack'", "'Harrisa'", "'Hilbah'", 
+                    "'Homemade_Pie_Crust'", "'Hummus_(Greek)'", 
                     "'Hummus_I'", "'Iced_Tea'", "'Idli'", "'Indian_Beans'", 
                     "'Indian_Potatoes'", "'Indian_Rice'", "'Italian_Bread'", 
                     "'Keralan_vegetable_stew'", "'Khaman'", "'Khus_Khus_Halwa'", 
@@ -178,14 +185,14 @@ class TestWCG(unittest.TestCase):
                                         ["'Chow_Mein'", "'Ghavoot'",
                                          "'Ragi_Dosa'", "'Vegan_Pate'"],
                                         "'Roasted_Brined_Turkey'")
-        assert result == (230, "'Vegan_recipes'")
+        assert result == (229, "'Vegan_recipes'")
 
     def test_lowest_common_ancestor2(self):
         result = lowest_common_ancestor(self.taxonomy,
                                         ["'Chow_Mein'", "'Ghavoot'",
                                          "'Ragi_Dosa'", "'Vegan_Pate'"],
                                         "'Soy_Milk'")
-        assert result == (3145, "'Recipes'")
+        assert result == (3122, "'Recipes'")
 
     def test_lowest_common_ancestor3(self):
         result = lowest_common_ancestor(self.taxonomy,
