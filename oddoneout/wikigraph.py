@@ -11,6 +11,7 @@ so it can be ordered into an ontology.
 import copy
 from taxonomy import Taxonomy, Specificity
 from wiki_demo import findPagesInCategory, findPagesById
+from collections import defaultdict
 
 
 class WCGTaxonomy(Taxonomy):
@@ -37,30 +38,21 @@ class WCGTaxonomy(Taxonomy):
     
     def get_ancestor_categories(self, node):
         # Given a page label, returns a set of its ancestor category labels
-        # !!!! Current priority !!!!
-        # Only returns direct parents right now, not further ancestors
         pages = self.get_page_dict()
         catlinks = self.get_catlinks_dict()
-        print ("Given node", node, ",", pages[node])
         p_ids = pages[node]
         visited_pages = p_ids.copy()
-        print ("Corresponding ID should be", p_ids)
         
         categories = set()
-        while (len(p_ids) != 0 and self.get_root() not in categories):
+        while len(p_ids) != 0 and self.get_root() not in categories:
             
             page_id, page_namespace = p_ids.pop()
-            print ("Grabbing categories pointing to id", page_id)
             if page_id in catlinks:
                 for cat_name, page_type in catlinks[page_id]:
                     
                     cat_id = pages[cat_name][0]
                     
                     if cat_id[0] not in visited_pages:
-                        print ("Found cat", cat_name, "of type", page_type)
-                        
-                        print ("Cat's id is", cat_id)
-                        
                         categories.add(cat_name)
                         visited_pages.append(cat_id[0])
                         p_ids.append(cat_id)
@@ -80,10 +72,8 @@ class WCGTaxonomy(Taxonomy):
         visited_categories = [node]
         
         categories = [node]
-        while (len(categories) != 0):
+        while len(categories) != 0:
             category_name = categories.pop()
-            print ( "Current cat:", category_name)
-            
             for page_id, page_type in catlinks[category_name]:
                 if page_id in pages:
                     for page_name, page_namespace in pages[page_id]:
@@ -103,29 +93,24 @@ class WCGTaxonomy(Taxonomy):
     def get_catlinks_dict(self):
         return copy.deepcopy(self.catlinks)
 
+def isMetaData(page_namespace):
+    """WCG metadata have page_namespace = 1-13 or 15."""
+    pn = int(page_namespace)
+    return pn == 15 or (pn >= 1 and pn <= 13)
+
 def getAllPages(pages_filename):
-    print ("Pages")
     pages_file = open(pages_filename, 'r')
     
-    pages = dict()
+    pages = defaultdict(list)
     for page in pages_file:
         page_id, page_namespace, page_title, page_is_redirect, page_len, page_content_model, page_lang = page.split('\t')
-        # Ignores page_namespace = 1-13 and 15 because they are all metadata
-        if int(page_namespace) == 0 or int(page_namespace) == 14 or int(page_namespace) > 15:
-            if page_id in pages:
-                pages[page_id].append( (page_title, page_namespace) )
-            else:
-                pages[page_id] = [ (page_title, page_namespace ) ]
-            if page_title in pages:
-                pages[page_title].append( (page_id, page_namespace) )
-            else:
-                pages[page_title] = [ (page_id, page_namespace) ]
-#        print ("Pages[", page_id, "]:", pages[page_id])
+        if not isMetaData(page_namespace):
+            pages[page_id].append( (page_title, page_namespace) )
+            pages[page_title].append( (page_id, page_namespace) )
     pages_file.close()
     return pages
 
 def getAllCategories(catlinks_filename):
-    print ("Categories")
     catlinks_file = open(catlinks_filename, 'r')
     
     cats = dict()
@@ -139,7 +124,6 @@ def getAllCategories(catlinks_filename):
             cats[page_id].append( (cat_label, page_type) )
         else:
             cats[page_id] = [ (cat_label, page_type) ]
-#        print("cats[", cat_label, "]:", cats[cat_label])
     catlinks_file.close()
     return cats
 
