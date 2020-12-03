@@ -94,7 +94,11 @@ class WCGTaxonomy(Taxonomy):
         return copy.deepcopy(self.catlinks)
 
 def isMetaData(page_namespace):
-    """WCG metadata have page_namespace = 1-13 or 15."""
+    """
+    WCG metadata have page_namespace = 1-13 or 15.
+    
+    Reference: https://www.mediawiki.org/wiki/Manual:Namespace
+    """
     pn = int(page_namespace)
     return pn == 15 or (pn >= 1 and pn <= 13)
 
@@ -113,17 +117,12 @@ def getAllPages(pages_filename):
 def getAllCategories(catlinks_filename):
     catlinks_file = open(catlinks_filename, 'r')
     
-    cats = dict()
+    cats = defaultdict(list)
     for category in catlinks_file:
         page_id, cat_label, page_type = category.strip('\n').split('\t')
-        if cat_label in cats:
-            cats[cat_label].append( (page_id, page_type) )
-        else:
-            cats[cat_label] = [ (page_id, page_type) ]
-        if page_id in cats:
-            cats[page_id].append( (cat_label, page_type) )
-        else:
-            cats[page_id] = [ (cat_label, page_type) ]
+        
+        cats[cat_label].append( (page_id, page_type) )
+        cats[page_id].append( (cat_label, page_type) )
     catlinks_file.close()
     return cats
 
