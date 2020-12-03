@@ -12,20 +12,8 @@ Each list is stored in one larger list, which is returned from main.
 
 import re # re.split - swifter parsing of each puzzle
 
-# Current relative directory
-DATA_DIR = "odd-man-out/data/"
-
-# .tsv data files
-COMMON1 = DATA_DIR + "common1.tsv"
-COMMON2 = DATA_DIR + "common2.tsv"
-PROPER1 = DATA_DIR + "proper1.tsv"
-PROPER2 = DATA_DIR + "proper2.tsv"
-CROWD_FILTER = DATA_DIR + "crowdsourced_filtered.tsv"
-# unfiltered does not have typical OOO format and will not be parsed correctly
-CROWD_UNFILTER = DATA_DIR + "crowdsourced_unfiltered.tsv"
-
-def main():
-    puzzlefile = open(COMMON1, 'r')
+def main(puzzlefile_name):
+    puzzlefile = open(puzzlefile_name, 'r')
     
     dataset = []
     for puzzle in puzzlefile:
@@ -42,4 +30,16 @@ def main():
     return dataset
 
 if __name__ == "__main__":
-    main()
+    # Current relative directory
+    DATA_DIR = "odd-man-out/data/"
+
+    # .tsv data files
+    COMMON1 = DATA_DIR + "common1.tsv"
+    COMMON2 = DATA_DIR + "common2.tsv"
+    PROPER1 = DATA_DIR + "proper1.tsv"
+    PROPER2 = DATA_DIR + "proper2.tsv"
+    CROWD_FILTER = DATA_DIR + "crowdsourced_filtered.tsv"
+    # unfiltered does not have typical OOO format and will not be parsed correctly
+    CROWD_UNFILTER = DATA_DIR + "crowdsourced_unfiltered.tsv"
+    
+    main(COMMON1)
