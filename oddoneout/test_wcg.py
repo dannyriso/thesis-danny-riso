@@ -214,10 +214,8 @@ class TestWCG(unittest.TestCase):
         result = solve_puzzle(puzzle, similarity)
         assert result == (0.1, "'Thanksgiving_recipes'", "'Turkey_Wrap'")
 
-"""
     def test_solve_puzzles(self):
         similarity = TaxonomySimilarity(self.taxonomy)
         result = solve_puzzles(common2_puzzles, similarity, logger=silent_logger)
         assert result == (38, 14, 50)
 
-"""
