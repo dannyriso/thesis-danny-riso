@@ -51,6 +51,7 @@ class DBpediaTaxonomy(Taxonomy):
             print ("Query failed.")
             return None
     
+    
     def is_category(self, node_name):
         query = self.db_prefixes + """
         ASK {
@@ -70,18 +71,21 @@ class DBpediaTaxonomy(Taxonomy):
             print ("Query failed.")
             return None
 
+
     def get_root(self):
         return "Articles"
 
+
     def num_instances(self):
         return self.num_insts
+
 
     def get_ancestor_categories(self, node_name):
         ancestors = [node_name]
         for anc in ancestors:
             if anc == self.get_root():
                 continue
-            print ("Currently considering:", anc)
+            #print ("Currently considering:", anc)
             if self.is_category(anc):
                 query = self.db_prefixes + """
                 SELECT ?label
@@ -108,8 +112,8 @@ class DBpediaTaxonomy(Taxonomy):
                 for trip in triples['results']['bindings']:
                     if trip['label']['value'] not in ancestors:
                         ancestors.append(trip['label']['value'])
-                        print (trip['label']['value'])
-#                        print(ancestors)
+                        #print (trip['label']['value'])
+                        #print(ancestors)
                 
             except:
                 print ("Query failed for ancestors of", anc)
@@ -118,6 +122,7 @@ class DBpediaTaxonomy(Taxonomy):
 #        print( "Final result:")
 #        print (ancestors)
         return ancestors
+
 
     def get_descendant_instances(self, node_name):
         categories = [node_name.replace(' ', '_')]
@@ -145,7 +150,7 @@ class DBpediaTaxonomy(Taxonomy):
             except:
                 print ("Query failed for subcategories of", cat)
         
-        print("Got subcats, now get instances.")
+#        print("Got subcats, now get instances.")
         for cat in categories:
             query = self.db_prefixes + """
                 SELECT ?label
