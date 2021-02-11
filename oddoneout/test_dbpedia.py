@@ -28,23 +28,44 @@ class TestWordnet(unittest.TestCase):
 
     def test_ancestor_categories1(self):
         result = self.taxonomy.get_ancestor_categories("Articles")
-        expected = ["Contents", "Wikipedia namespaces",
-                    "Wikipedia namespace administration",
-                    "Wikipedia administration by MediaWiki feature",
-                    "Wikipedia administration"]
+        expected = ['Contents', 'Wikipedia administration',
+                    'Wikipedia administration by MediaWiki feature',
+                    'Wikipedia namespace administration', 'Wikipedia namespaces']
         assert sorted(result) == expected
 
     def test_ancestor_categories2(self):
-        result = self.taxonomy.get_ancestor_categories("Fresh food")
-        expected = ["Articles", "Container categories", "Contents", "Food and drink",
-                    "Main topic articles", "Main topic classifications",
-                    "Wikipedia administration",
-                    "Wikipedia administration by MediaWiki feature",
-                    "Wikipedia categories",
-                    "Wikipedia categories that should not contain articles",
-                    "Wikipedia categorization", "Wikipedia content administration",
-                    "Wikipedia namespace administration", "Wikipedia namespaces",
-                    "Wikipedia navigation"]
+        result = self.taxonomy.get_ancestor_categories("Food and drink")
+        expected = ['Academia', 'Academic discipline interactions',
+                    'Academic disciplines', 'Anthropology', 'Applied disciplines',
+                    'Applied sciences', 'Art and culture WikiProjects', 'Articles',
+                    'Articles by WikiProject', 'Biology', 'Branches of biology',
+                    'Branches of philosophy', 'Branches of science',
+                    'Categories by field', 'Categories by parameter',
+                    'Categories by topic', 'Categories requiring diffusion', 'Concepts',
+                    'Concepts by field', 'Concepts in metaphysics', 'Consciousness',
+                    'Container categories', 'Contents', 'Culture',
+                    'Culture Wikipedia administration', 'Education', 'Entities',
+                    'Euthenics', 'Food Watchlist Articles', 'Food and drink WikiProjects',
+                    'Health', 'Health sciences', 'Human activities', 'Human nature',
+                    'Humanities', 'Life', 'Life sciences', 'Main topic classifications',
+                    'Maintenance by namespace', 'Matter', 'Metaphysics',
+                    'Metaphysics of mind', 'Mind', 'Namespace-specific categories',
+                    'Natural sciences', 'Nature', 'Neuroscience', 'Objects', 'Ontology',
+                    'Organisms', 'Pages by WikiProject', 'Personal life',
+                    'Philosophical concepts', 'Philosophy', 'Philosophy by topic',
+                    'Philosophy of mind', 'Physical objects', 'Psychological concepts',
+                    'Psychology', 'Reality', 'Science', 'Science and technology', 'Self',
+                    'Social sciences', 'Society', 'Subfields by academic discipline',
+                    'Talk namespace categories', 'Universe', 'WikiProject Food and drink',
+                    'WikiProject Food and drink articles', 'WikiProject resources',
+                    'WikiProjects', 'WikiProjects by topic', 'Wikipedia administration',
+                    'Wikipedia administration by MediaWiki feature',
+                    'Wikipedia administration by topic', 'Wikipedia categories',
+                    'Wikipedia categories that should not contain articles',
+                    'Wikipedia categorization', 'Wikipedia category maintenance',
+                    'Wikipedia collaborations', 'Wikipedia content administration',
+                    'Wikipedia maintenance', 'Wikipedia namespace administration',
+                    'Wikipedia namespaces', 'Wikipedia navigation']
         assert sorted(result) == expected
         #assert result == expected
         #print(self.taxonomy.num_instances())
