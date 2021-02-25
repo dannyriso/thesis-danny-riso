@@ -34,7 +34,7 @@ class WCGTaxonomy(Taxonomy):
     def get_root(self):
         # For now, use "'Recipes'" as a guaranteed root with many subcategories.
         # When looking at the entire enwikibooks, use "'Categories'"
-        return "'Recipes'"
+        return "'Contents'"
     
     def get_ancestor_categories(self, node):
         # Given a page label, returns a set of its ancestor category labels
