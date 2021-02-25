@@ -84,17 +84,17 @@ class TestWordnet(unittest.TestCase):
                     "Tweed Water Spaniel", "Water dog", "Wetterhoun"]
         assert sorted(result) == expected
         
-"""
+
     def test_lowest_common_ancestor1(self):
         result = lowest_common_ancestor(self.taxonomy,
-                                        ["Orange", "Red", "Green", "Blue"],
+                                        ["Yellow", "Red", "Green", "Blue"],
                                         "Apple")
         assert result == (168, "Rainbow colors")
 
     def test_lowest_common_ancestor2(self):
         result = lowest_common_ancestor(self.taxonomy,
-                                        ["Orange", "Red", "Green", "Blue"],
-                                        "Gold")
+                                        ["Yellow", "Red", "Green", "Blue"],
+                                        "Cyan")
         assert result == (104999, "Contents")
 
     def test_lowest_common_ancestor3(self):
@@ -118,4 +118,3 @@ class TestWordnet(unittest.TestCase):
         result = solve_puzzles(common2_puzzles, similarity, logger=silent_logger)
         assert result == (38, 14, 50)
 
-"""

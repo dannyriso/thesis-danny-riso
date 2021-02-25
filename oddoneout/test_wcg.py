@@ -8,8 +8,8 @@ from puzzle import OddOneOutPuzzle, common2_puzzles
 class TestWCG(unittest.TestCase):
 
     def setUp(self):
-        self.taxonomy = WCGTaxonomy("../enwikibooks-20201020-categorylinks",
-                                    "../enwikibooks-20201020-page")
+        self.taxonomy = WCGTaxonomy("../enwiki-20201020-categorylinks",
+                                    "../enwiki-20201020-page")
 
     def test_is_instance(self):
         assert self.taxonomy.is_instance("'Easy_Peach_Cobbler'")
