@@ -26,8 +26,8 @@ class DBpediaTaxonomy(Taxonomy):
             PREFIX dbc: <http://dbpedia.org/resource/Category>
         """
         self.sparql = SPARQLWrapper("https://dbpedia.org/sparql")
-        self.ancestors = defaultdict(list)
-        self.descendants = defaultdict(list)
+        self.ancestors = defaultdict(set)
+        self.descendants = defaultdict(set)
         # self.num_insts = len(self.get_descendant_instances(self.get_root()))
         # This takes at least 48 hours to fully calculate,
         # and monopolizes a lot of DBpedia's queryability.
@@ -51,8 +51,7 @@ class DBpediaTaxonomy(Taxonomy):
             #print ("Result:", triples['boolean'])
             return triples['boolean']
         except:
-            print ("Query failed.")
-            return None
+            print ("Query failed; instance check failed for", node_name)
     
     
     def is_category(self, node_name):
@@ -71,8 +70,7 @@ class DBpediaTaxonomy(Taxonomy):
             #print ("Result:", triples['boolean'])
             return triples['boolean']
         except:
-            print ("Query failed.")
-            return None
+            print ("Query failed; category check failed for", node_name)
 
 
     def get_root(self):
@@ -84,10 +82,11 @@ class DBpediaTaxonomy(Taxonomy):
 
 
     def get_ancestor_categories(self, node_name):
+        #print("Getting ancestors of", node_name)
         if node_name in self.ancestors:
             return self.ancestors[node_name]
         elif node_name == self.get_root():
-            return []
+            return set()
         else:
             if self.is_category(node_name):
                 query = self.db_prefixes + """
@@ -117,64 +116,80 @@ class DBpediaTaxonomy(Taxonomy):
                     if res_label not in self.ancestors[node_name]:
                         for anc in self.get_ancestor_categories(res_label):
                             if anc not in self.ancestors[node_name]:
-                                self.ancestors[node_name].append(anc)
-                        self.ancestors[node_name].append(res_label)
+                                self.ancestors[node_name].add(anc)
+                        self.ancestors[node_name].add(res_label)
                 
             except:
                 print ("Query failed for ancestors of", node_name)
+                self.ancestors.pop(node_name)
         
-        return self.ancestors[node_name]
+        return set(self.ancestors[node_name])
 
 
     def get_descendant_instances(self, node_name):
-        category_name = node_name.replace(' ', '_')
-        if category_name in self.descendants:
-            return self.descendants[category_name]
-        elif self.is_instance(category_name):
-            self.descendants[category_name] = category_name
-            return [category_name]
-        else:
-            instances = self.db_prefixes + """
-                SELECT ?label
-                WHERE {
-                    ?resource dct:subject <http://dbpedia.org/resource/Category:""" + category_name + """>;
-                    rdfs:label ?label
-                    
-                    FILTER(lang(?label) = 'en')
-                }
-            """
-            self.sparql.setQuery(instances)
-            try:
-                self.sparql.setReturnFormat(JSON)
-                results = self.sparql.query()
-                triples = results.convert()
-                for trip in triples['results']['bindings']:
-                    instance_name = trip['label']['value']
-                    self.descendants[category_name].append(instance_name)
-            except:
-                print ("Query failed for instances of ", category_name)
+        category_name = node_name.replace(' ', '_').replace('"', '\"')
+        categories = [category_name]
+        visited_categories = set()
+        instances = []
+        while(categories):
+            cat = categories.pop()
+            visited_categories.add(cat)
+            #print("Get descendants of", cat)
             
-            subcats = self.db_prefixes + """
-                SELECT ?label
-                WHERE {
-                    ?resource skos:broader <http://dbpedia.org/resource/Category:""" + category_name + """>;
-                    rdfs:label ?label
+            if cat in self.descendants:
+                 for inst in self.descendants[cat]:
+                     self.descendants[category_name].add(inst)
+            elif self.is_instance(cat):
+                self.descendants[cat] = set(cat)
+                self.descendants[category_name].add(cat)
+            else:
+                instances = self.db_prefixes + """
+                    SELECT ?label
+                    WHERE {
+                        ?resource dct:subject <http://dbpedia.org/resource/Category:""" + cat + """>;
+                        rdfs:label ?label
+                        
+                        FILTER(lang(?label) = 'en')
+                    }
+                """
+                self.sparql.setQuery(instances)
+                try:
+                    self.sparql.setReturnFormat(JSON)
+                    results = self.sparql.query()
+                    triples = results.convert()
+                    for trip in triples['results']['bindings']:
+                        instance_name = trip['label']['value']
+                        self.descendants[category_name].add(instance_name)
                     
-                    FILTER(lang(?label) = 'en')
-                }
-            """
-            self.sparql.setQuery(subcats)
-            try:
-                self.sparql.setReturnFormat(JSON)
-                results = self.sparql.query()
-                triples = results.convert()
-                for trip in triples['results']['bindings']:
-                    subcategory_name = trip['label']['value'].replace(' ', '_')
-                    for descend in self.get_descendant_instances(subcategory_name):
-                        self.descendants[category_name].append(descend)
+                except:
+                    print ("Query failed for instances of", cat)
+                    if cat in self.descendants:
+                        self.descendants.pop(cat)
+        
+        
+                subcats = self.db_prefixes + """
+                    SELECT ?label
+                    WHERE {
+                        ?resource skos:broader <http://dbpedia.org/resource/Category:""" + cat + """>;
+                        rdfs:label ?label
+                        
+                        FILTER(lang(?label) = 'en')
+                    }
+                """
+                self.sparql.setQuery(subcats)
+                try:
+                    self.sparql.setReturnFormat(JSON)
+                    results = self.sparql.query()
+                    triples = results.convert()
+                    for trip in triples['results']['bindings']:
+                        subcategory_name = trip['label']['value'].replace(' ', '_').replace('"', '\"')
+                        if subcategory_name not in visited_categories:
+                            categories.append(subcategory_name)
                     
-            except:
-                print ("Query failed for subcategories of", category_name)
+                except:
+                    print ("Query failed for subcategories of ", cat)
+                    if cat in self.descendants:
+                        self.descendants.pop(cat)
         
         return self.descendants[category_name]
         

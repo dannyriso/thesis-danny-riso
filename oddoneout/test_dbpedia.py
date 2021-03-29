@@ -67,8 +67,6 @@ class TestWordnet(unittest.TestCase):
                     'Wikipedia maintenance', 'Wikipedia namespace administration',
                     'Wikipedia namespaces', 'Wikipedia navigation']
         assert sorted(result) == expected
-        #assert result == expected
-        #print(self.taxonomy.num_instances())
 
     def test_descendant_instances1(self):
         result = self.taxonomy.get_descendant_instances("Pear dishes")
@@ -86,22 +84,55 @@ class TestWordnet(unittest.TestCase):
         
 
     def test_lowest_common_ancestor1(self):
+        """
+        The first few calls to get_ancestor_categories warms up the
+        taxonomy cache, making ancestors of a certain node easy to query
+        so that calling lowest_common_ancestor takes less time,
+        leaving less room for error due to the DBpedia endpoint being
+        busy or Internet shorting out.
+        
+        This is common among all the test_lowest_common_ancestor methods.
+        """
+        self.get_ancestor_categories("Main topic classifications")
+        self.get_ancestor_categories("Science")
+        self.get_ancestor_categories("Mind")
+        self.get_ancestor_categories("Vision")
+        self.get_ancestor_categories("Light")
+        self.get_ancestor_categories("Colors")
+        self.get_ancestor_categories("Anatomy")
+        self.get_ancestor_categories("Branches of botany")
+        self.get_ancestor_categories("Fruit")
         result = lowest_common_ancestor(self.taxonomy,
                                         ["Yellow", "Red", "Green", "Blue"],
                                         "Apple")
+        print("Lowest common ancestor 1:", result)
         assert result == (168, "Rainbow colors")
 
     def test_lowest_common_ancestor2(self):
+        self.get_ancestor_categories("Main topic classifications")
+        self.get_ancestor_categories("Science")
+        self.get_ancestor_categories("Mind")
+        self.get_ancestor_categories("Vision")
+        self.get_ancestor_categories("Light")
+        self.get_ancestor_categories("Colors")
         result = lowest_common_ancestor(self.taxonomy,
                                         ["Yellow", "Red", "Green", "Blue"],
                                         "Cyan")
+        print("Lowest common ancestor 2:", result)
         assert result == (104999, "Contents")
 
     def test_lowest_common_ancestor3(self):
+        self.get_ancestor_categories("Main topic classifications")
+        self.get_ancestor_categories("Science")
+        self.get_ancestor_categories("Anthropology")
+        self.get_ancestor_categories("Biology")
+        self.get_ancestor_categories("Species")
+        self.get_ancestor_categories("Dogs")
         result = lowest_common_ancestor(self.taxonomy,
                                         ["Poodle", "Irish Water Spaniel",
                                          "Wetterhoun", "Lagotto Romagnolo"],
                                         "Golden Retriever")
+        print("Lowest common ancestor 3:", result)
         assert result == (4, "Water dogs")
 
     def test_solve_puzzle(self):
