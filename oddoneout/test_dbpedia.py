@@ -9,7 +9,7 @@ from solver import solve_puzzle, TaxonomySimilarity, solve_puzzles, silent_logge
 from puzzle import OddOneOutPuzzle, common2_puzzles
 
 
-class TestWordnet(unittest.TestCase):
+class TestDBpedia(unittest.TestCase):
 
     def setUp(self):
         self.taxonomy = DBpediaTaxonomy()
